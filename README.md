@@ -1,4 +1,6 @@
 import telebot
+import requests
+import json
 
 
 TOKEN = '6728954039:AAFUSEdBtpCT_lW88qQl-u1zQuuyWWgRQNU'
@@ -29,10 +31,12 @@ def values(message: telebot.types.Message):
     bot.reply_to(message, text)
 
 
-
 @bot.message_handler(content_types=['text', ])
 def convert(message: telebot.types.Message):
-
+    quote, base, amount = message.text.split(' ')
+    r = requests.get(f'https://www.cbr.ru/scripts/XML_daily.asp?fsym={keys[quote]}&tsyms={keys[base]}')
+    text = json.loads(r.content)[keys[base]]
+    bot.send_message(message.chat.id, text)
 
 
 bot.polling()
